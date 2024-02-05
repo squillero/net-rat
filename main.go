@@ -5,6 +5,8 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -12,7 +14,7 @@ import (
 
 const NetRatVersion = "0.1"
 
-var CacheFile = filepath.Join(os.TempDir(), "idle-fetcher.json")
+var CacheFile = filepath.Join(os.TempDir(), "netrat.json")
 
 // FLAGS
 var Verbose bool = false
@@ -21,4 +23,16 @@ var NoCache bool = false
 func main() {
 	log.SetPrefix("[NetRat] ")
 	log.Printf("This is NetRat v%s", NetRatVersion)
+
+	// Parse flags
+	flag.BoolVar(&Verbose, "v", false, "Verbose operations")
+	flag.BoolVar(&NoCache, "n", false, "Don't use cache")
+
+	var foo NetInfo
+	test(foo)
+	test(&foo)
+}
+
+func test(s Snitcher) {
+	fmt.Println(s.snitch())
 }
