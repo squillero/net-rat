@@ -13,6 +13,14 @@ import (
 	"time"
 )
 
+// https://api.ipify.org?format=json
+// http://api.ipify.org?format=json
+// http://ipinfo.io
+// https://freeipapi.com/api/json
+// http://ipv4.iplocation.net
+
+// -- https://iplocation.io/
+
 type Rat interface {
 	String() string
 	IsReliable() bool
