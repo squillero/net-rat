@@ -6,7 +6,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -28,11 +27,6 @@ func main() {
 	flag.BoolVar(&Verbose, "v", false, "Verbose operations")
 	flag.BoolVar(&NoCache, "n", false, "Don't use cache")
 
-	var foo NetInfo
-	test(foo)
-	test(&foo)
-}
-
-func test(s Snitcher) {
-	fmt.Println(s.snitch())
+	getMullvad()
+	getAirVPN()
 }
