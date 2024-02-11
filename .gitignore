@@ -23,3 +23,6 @@ go.work
 
 # Idea
 .idea
+
+# MacOS
+.DS_Store

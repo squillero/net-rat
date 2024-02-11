@@ -24,9 +24,9 @@ func main() {
 	log.Printf("This is NetRat v%s", NetRatVersion)
 
 	// Parse flags
+	flag.Parse()
 	flag.BoolVar(&Verbose, "v", false, "Verbose operations")
 	flag.BoolVar(&NoCache, "n", false, "Don't use cache")
 
-	getMullvad()
-	getAirVPN()
+	eager()
 }
