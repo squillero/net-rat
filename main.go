@@ -21,6 +21,7 @@ var NoCache bool = false
 
 func main() {
 	log.SetPrefix("[NetRat] ")
+	log.SetFlags(0)
 	log.Printf("This is NetRat v%s", NetRatVersion)
 
 	// Parse flags

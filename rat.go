@@ -1,16 +1,20 @@
-//        ____()()     NetRat v0.1 -- Yet another Go experiment
-//       /      @@     Copyright (c) 2024 by Giovanni Squillero
-// `~~~~~\_;m__m._>o   Distributed under 0BSD (see LICENSE)
+//        ____()()     NetRat v0.1
+//       /      @@     ~~~~~~~~~~~
+// `~~~~~\_;m__m._>o   Yet another little Go experiment
+
+// Copyright © 2024 Giovanni Squillero <giovanni.squillero@polito.it>
+// This code is being released for EDUCATIONAL and ACADEMIC purposes.
+// +----------------------------------------------------------------+
+// | <=*=> COMMERCIAL USE OF THE CODE IS EXPRESSLY PROHIBITED <=*=> |
+// +----------------------------------------------------------------+
+// The code is made available "AS-IS" without any express or implied
+// guarantees as to fitness, merchantability, or non-infringement.
 
 package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"io"
-	"log"
-	"net/http"
 	"time"
 )
 
@@ -24,89 +28,21 @@ import (
 
 // -- https://iplocation.io/
 
-type Rat interface {
+type IpType int
+
+const (
+	IllegalIP IpType = iota
+	PrivateIP
+	PublicIP
+)
+
+type IpInfo interface {
+	GetType() IpType
 	String() string
-	IsReliable() bool
-	FullInfo() string
-}
-
-type PublicIpInfo struct {
-	Ip        string
-	Geo       string
-	Source    string
-	Timestamp time.Time
-	reliable  bool
-}
-
-func (ni PublicIpInfo) String() string {
-	return "ip: " + ni.Ip
-}
-
-func (ni PublicIpInfo) IsReliable() bool {
-	return ni.reliable
-}
-
-func (ni PublicIpInfo) FullInfo() string {
-	return "<not implemented>"
-}
-
-func getMullvad(out chan PublicIpInfo) {
-	const url string = "https://am.i.mullvad.net/json"
-
-	result, err := http.Get(url)
-	if err != nil {
-		return
-	}
-	cooked, err := io.ReadAll(result.Body)
-	if err != nil {
-		return
-	}
-
-	var mullvadInfo map[string]interface{}
-	if err := json.Unmarshal([]byte(cooked), &mullvadInfo); err != nil {
-		// print out if error is not nil
-		fmt.Println(err)
-	}
-
-	info := PublicIpInfo{
-		Ip:     mullvadInfo["ip"].(string),
-		Geo:    mullvadInfo["country"].(string),
-		Source: "Mullvad",
-	}
-	log.Println(info)
-	out <- info
-}
-
-func getAirVPN(out chan PublicIpInfo) {
-	const url string = "https://airvpn.org/api/whatismyip/"
-
-	result, err := http.Get(url)
-	if err != nil {
-		return
-	}
-	cooked, err := io.ReadAll(result.Body)
-	if err != nil {
-		return
-	}
-
-	var mullvadInfo map[string]interface{}
-	if err := json.Unmarshal([]byte(cooked), &mullvadInfo); err != nil {
-		// print out if error is not nil
-		fmt.Println(err)
-	}
-
-	info := PublicIpInfo{
-		Ip:     mullvadInfo["ip"].(string),
-		Geo:    (mullvadInfo["geo"].(map[string]interface{}))["name"].(string),
-		Source: "AirVPN",
-	}
-	log.Println(info)
-	out <- info
-
 }
 
 func eager() {
-	ch := make(chan PublicIpInfo, 1)
+	ch := make(chan IpInfo, 1)
 
 	// Create a context with a timeout of 1 seconds
 	ctxTimeout, cancel := context.WithTimeout(context.Background(), time.Second*1)
