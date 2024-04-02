@@ -23,8 +23,8 @@ var Verbose bool = false
 var NoCache bool = false
 
 func main() {
-	log.SetPrefix("[NetRat] ")
-	log.SetFlags(0)
+	log.SetPrefix("🐀 ") // 🐁
+	log.SetFlags(log.Ldate | log.Ltime | log.Lmicroseconds | log.Lmsgprefix | log.LUTC)
 	log.Printf("This is NetRat v%s", NetRatVersion)
 
 	// Parse flags

@@ -10,6 +10,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 )
 
@@ -49,7 +50,7 @@ func eager() {
 
 	select {
 	case <-ctxTimeout.Done():
-		fmt.Printf("Context cancelled: %v\n", ctxTimeout.Err())
+		log.Fatalf("Context cancelled: %v\n", ctxTimeout.Err())
 	case result := <-ch:
 		fmt.Printf("Received: %s\n", result)
 	}
