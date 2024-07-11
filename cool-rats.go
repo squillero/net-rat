@@ -39,7 +39,7 @@ func getAirVPN(out chan IpInfo) {
 
 	var geo string
 	if geo_additional, ok := cooked["geo_additional"]; ok {
-		geo = (geo_additional.(map[string]interface{}))["region_name"].(string) + "/" + (cooked["geo_additional"].(map[string]interface{}))["country_name"].(string)
+		geo = (geo_additional.(map[string]interface{}))["region_name"].(string) + ", " + (cooked["geo_additional"].(map[string]interface{}))["country_name"].(string)
 	} else {
 		geo = (cooked["geo"].(map[string]interface{}))["name"].(string)
 	}
@@ -71,7 +71,7 @@ func getIpGeoInfo(out chan IpInfo, url, ip, geoInfo, geoInfo2 string) {
 
 	geo := cooked[geoInfo].(string)
 	if geoInfo2 != "" {
-		geo += "/" + cooked[geoInfo2].(string)
+		geo += ", " + cooked[geoInfo2].(string)
 	}
 
 	info := IpInfo{
