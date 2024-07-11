@@ -10,8 +10,9 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
+	"github.com/jackpal/gateway"
 	"io"
+	"log/slog"
 	"net/http"
 	"time"
 )
@@ -32,7 +33,7 @@ func getAirVPN(out chan IpInfo) {
 	var cooked map[string]interface{}
 	if err := json.Unmarshal([]byte(raw), &cooked); err != nil {
 		// print out if error is not nil
-		fmt.Println(err)
+		slog.Error("getAirVPN", "error", err)
 	}
 
 	// check if "geo_additional" is present in cooked
@@ -66,7 +67,7 @@ func getIpGeoInfo(out chan IpInfo, url, ip, geoInfo, geoInfo2 string) {
 	var cooked map[string]interface{}
 	if err := json.Unmarshal([]byte(raw), &cooked); err != nil {
 		// print out if error is not nil
-		fmt.Println(err)
+		slog.Error("getIpGeoInfo", "error", err)
 	}
 
 	geo := cooked[geoInfo].(string)
@@ -82,4 +83,17 @@ func getIpGeoInfo(out chan IpInfo, url, ip, geoInfo, geoInfo2 string) {
 		Timestamp: time.Now(),
 	}
 	out <- info
+}
+
+func getGateway(out chan IpInfo) {
+	if gateway, err := gateway.DiscoverGateway(); err == nil {
+		info := IpInfo{
+			RawIp:     gateway.String(),
+			CookedIp:  gateway.String(),
+			Source:    "github.com/jackpal/gateway",
+			Flags:     LocalIP | CoolIP,
+			Timestamp: time.Now(),
+		}
+		out <- info
+	}
 }

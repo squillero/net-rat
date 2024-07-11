@@ -12,6 +12,7 @@ import (
 	"encoding/json"
 	"io"
 	"log"
+	"log/slog"
 	"net"
 	"net/http"
 	"strings"
@@ -68,7 +69,7 @@ func getLocalIpUDP(out chan IpInfo) {
 			RawIp:     localAddress.IP.String(),
 			CookedIp:  localAddress.IP.String(),
 			Source:    "udp",
-			Flags:     LocalIP | CoolIP,
+			Flags:     LocalIP,
 			Timestamp: time.Now(),
 		}
 		out <- info
@@ -83,12 +84,13 @@ func getLocalIpIFACE(out chan IpInfo) {
 	for _, address := range addrs {
 		// check the address type and if it is not a loopback the display it
 		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			slog.Debug("ipnet", "ipnet", ipnet)
 			if ipnet.IP.To4() != nil {
 				info := IpInfo{
 					RawIp:     ipnet.IP.String(),
 					CookedIp:  ipnet.IP.String(),
 					Source:    "IFace",
-					Flags:     LocalIP | CoolIP,
+					Flags:     LocalIP,
 					Timestamp: time.Now(),
 				}
 				out <- info

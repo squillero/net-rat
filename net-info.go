@@ -59,7 +59,7 @@ func getNetInfo() [2]IpInfo {
 	}
 
 	// Create a context with a timeout of 1 seconds
-	ctxTimeout, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	ctxTimeout, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	ipChan := make(chan IpInfo, 1)
@@ -67,10 +67,11 @@ func getNetInfo() [2]IpInfo {
 	// Local IP info providers
 	go getLocalIpIFACE(ipChan)
 	go getLocalIpUDP(ipChan)
+	go getGateway(ipChan)
 
 	// Cool IP info providers
 	go getAirVPN(ipChan)
-	go getIpGeoInfo(ipChan, "https://freeipapi.com/api/json", "ipAddress", "cityName", "countryName")
+	go getIpGeoInfo(ipChan, "https://freeipapi.com/api/json", "ipAddress", "cityName", "countryCode")
 	go getIpGeoInfo(ipChan, "https://am.i.mullvad.net/json", "ip", "city", "country")
 
 	// Standard IP info providers
@@ -91,7 +92,7 @@ func getNetInfo() [2]IpInfo {
 			timedOut = true
 		case ip = <-ipChan:
 			if result[ip.Flags&IpType].Valid() && result[ip.Flags&IpType].RawIp != ip.RawIp {
-				slog.Warn("IP Mismatch!", "old", result[ip.Flags&IpType].RawIp, "new", ip.RawIp)
+				slog.Debug("IP Mismatch!", "old", result[ip.Flags&IpType].RawIp, "new", ip.RawIp)
 			}
 			if !result[ip.Flags&IpType].Valid() || ip.Cool() {
 				result[ip.Flags&IpType] = ip
