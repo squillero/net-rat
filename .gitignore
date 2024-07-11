@@ -1,14 +1,10 @@
 #        ____()()     NetRat v0.1
 #       /      @@     ~~~~~~~~~~~
-# `~~~~~\_;m__m._>o   Yet another little Go experiment
+# `~~~~~\_;m__m._>o   A Go hack
 #
+# Coded in July 2024, between Italy and Australia (34,138 km).
 # Copyright © 2024 Giovanni Squillero <giovanni.squillero@polito.it>
-# This code is being released for EDUCATIONAL and ACADEMIC purposes.
-# +----------------------------------------------------------------+
-# | <=*=> COMMERCIAL USE OF THE CODE IS EXPRESSLY PROHIBITED <=*=> |
-# +----------------------------------------------------------------+
-# The code is made available "AS-IS" without any express or implied
-# guarantees such as fitness, merchantability, or non-infringement.
+# Released for educational and academic purposes under 0BSD.
 
 # Binaries for programs and plugins
 *.exe
