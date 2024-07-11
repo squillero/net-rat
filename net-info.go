@@ -67,7 +67,7 @@ func getNetInfo() [2]IpInfo {
 	// Local IP info providers
 	go getLocalIpIFACE(ipChan)
 	go getLocalIpUDP(ipChan)
-	go getGateway(ipChan)
+	//go getGateway(ipChan)
 
 	// Cool IP info providers
 	go getAirVPN(ipChan)

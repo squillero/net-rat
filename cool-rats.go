@@ -10,7 +10,6 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/jackpal/gateway"
 	"io"
 	"log/slog"
 	"net/http"
@@ -83,17 +82,4 @@ func getIpGeoInfo(out chan IpInfo, url, ip, geoInfo, geoInfo2 string) {
 		Timestamp: time.Now(),
 	}
 	out <- info
-}
-
-func getGateway(out chan IpInfo) {
-	if gateway, err := gateway.DiscoverGateway(); err == nil {
-		info := IpInfo{
-			RawIp:     gateway.String(),
-			CookedIp:  gateway.String(),
-			Source:    "github.com/jackpal/gateway",
-			Flags:     LocalIP | CoolIP,
-			Timestamp: time.Now(),
-		}
-		out <- info
-	}
 }

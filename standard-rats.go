@@ -81,20 +81,22 @@ func getLocalIpIFACE(out chan IpInfo) {
 	if err != nil {
 		return
 	}
+	var ips []string
 	for _, address := range addrs {
 		// check the address type and if it is not a loopback the display it
 		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
-			slog.Debug("ipnet", "ipnet", ipnet)
 			if ipnet.IP.To4() != nil {
-				info := IpInfo{
-					RawIp:     ipnet.IP.String(),
-					CookedIp:  ipnet.IP.String(),
-					Source:    "IFace",
-					Flags:     LocalIP,
-					Timestamp: time.Now(),
-				}
-				out <- info
+				slog.Debug("ipnet", "ipnet", ipnet)
+				ips = append(ips, ipnet.IP.String())
 			}
 		}
 	}
+	info := IpInfo{
+		RawIp:     strings.Join(ips[:], "/"),
+		CookedIp:  strings.Join(ips[:], "/"),
+		Source:    "IFace",
+		Flags:     LocalIP | CoolIP,
+		Timestamp: time.Now(),
+	}
+	out <- info
 }
