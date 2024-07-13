@@ -85,14 +85,18 @@ func getLocalIpIFACE(out chan IpInfo) {
 				var t IpFlags
 				if ipnet.IP.IsLoopback() {
 					t = LoopbackIP
-				} else {
+				} else if ipnet.IP.IsPrivate() {
 					t = LocalIP
+				} else {
+					slog.Debug("***IP", "ip", ipnet.IP)
 				}
-				out <- IpInfo{
-					RawIp:     ipnet.IP.String(),
-					Source:    "IFace",
-					Flags:     t,
-					Timestamp: time.Now(),
+				if t > 0 {
+					out <- IpInfo{
+						RawIp:     ipnet.IP.String(),
+						Source:    "IFace",
+						Flags:     t,
+						Timestamp: time.Now(),
+					}
 				}
 			}
 		}

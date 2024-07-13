@@ -47,10 +47,10 @@ func (ip IpInfo) String() string {
 	return cookedInfo
 }
 
-func (ip IpInfo) Cool() bool {
+func (ip IpInfo) IsCool() bool {
 	return ip.Flags&CoolIP == CoolIP
 }
-func (ip IpInfo) Valid() bool {
+func (ip IpInfo) IsValid() bool {
 	return ip.RawIp != "" && time.Now().Sub(ip.Timestamp) < INFO_TIMEOUT
 }
 
@@ -74,11 +74,11 @@ func (ni NetInfo) GetType(t IpFlags) string {
 }
 
 func (ni NetInfo) add(ip IpInfo) bool {
-	if !ip.Valid() {
+	if !ip.IsValid() {
 		return false
 	}
 	val, ok := ni.ips[ip.RawIp]
-	if !ok || (!val.Cool() && ip.Cool()) || ip.Timestamp.After(val.Timestamp) {
+	if !ok || (!val.IsCool() && ip.IsCool()) || ip.Timestamp.After(val.Timestamp) {
 		slog.Debug("Adding IP", "ip", ip)
 		ni.ips[ip.RawIp] = ip
 		return true
@@ -128,7 +128,7 @@ func getNetInfo() NetInfo {
 	go getLocalIpUDP(ipChan)
 	//go getGateway(ipChan)
 
-	// Cool IP info providers
+	// IsCool IP info providers
 	go getAirVPN(ipChan)
 	go getIpGeoInfo(ipChan, "https://freeipapi.com/api/json", "ipAddress", "cityName", "countryCode")
 	go getIpGeoInfo(ipChan, "https://am.i.mullvad.net/json", "ip", "city", "country")
