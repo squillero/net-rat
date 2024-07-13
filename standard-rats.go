@@ -11,7 +11,6 @@ package main
 import (
 	"encoding/json"
 	"io"
-	"log"
 	"log/slog"
 	"net"
 	"net/http"
@@ -30,11 +29,10 @@ func fetchJson(out chan IpInfo, url, tag string) {
 	}
 	var cooked map[string]interface{}
 	if err := json.Unmarshal([]byte(raw), &cooked); err != nil {
-		log.Println("fetchJson: ", err)
+		slog.Debug("fetchJson: ", "err", err)
 	}
 	info := IpInfo{
 		RawIp:     cooked[tag].(string),
-		CookedIp:  cooked[tag].(string),
 		Source:    url,
 		Flags:     PublicIP,
 		Timestamp: time.Time{},
@@ -53,7 +51,6 @@ func fetchRaw(out chan IpInfo, url string) {
 	}
 	info := IpInfo{
 		RawIp:     strings.TrimSpace(string(cooked)),
-		CookedIp:  strings.TrimSpace(string(cooked)),
 		Source:    url,
 		Flags:     PublicIP,
 		Timestamp: time.Time{},
@@ -67,7 +64,6 @@ func getLocalIpUDP(out chan IpInfo) {
 		localAddress := conn.LocalAddr().(*net.UDPAddr)
 		info := IpInfo{
 			RawIp:     localAddress.IP.String(),
-			CookedIp:  localAddress.IP.String(),
 			Source:    "udp",
 			Flags:     LocalIP,
 			Timestamp: time.Now(),
@@ -81,22 +77,24 @@ func getLocalIpIFACE(out chan IpInfo) {
 	if err != nil {
 		return
 	}
-	var ips []string
 	for _, address := range addrs {
 		// check the address type and if it is not a loopback the display it
-		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+		//if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+		if ipnet, ok := address.(*net.IPNet); ok {
 			if ipnet.IP.To4() != nil {
-				slog.Debug("ipnet", "ipnet", ipnet)
-				ips = append(ips, ipnet.IP.String())
+				var t IpFlags
+				if ipnet.IP.IsLoopback() {
+					t = LoopbackIP
+				} else {
+					t = LocalIP
+				}
+				out <- IpInfo{
+					RawIp:     ipnet.IP.String(),
+					Source:    "IFace",
+					Flags:     t,
+					Timestamp: time.Now(),
+				}
 			}
 		}
 	}
-	info := IpInfo{
-		RawIp:     strings.Join(ips[:], "/"),
-		CookedIp:  strings.Join(ips[:], "/"),
-		Source:    "IFace",
-		Flags:     LocalIP | CoolIP,
-		Timestamp: time.Now(),
-	}
-	out <- info
 }

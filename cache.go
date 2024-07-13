@@ -16,7 +16,7 @@ import (
 	"time"
 )
 
-const CACHE_TIMEOUT = 5 * time.Minute
+const INFO_TIMEOUT = 5 * time.Minute
 
 var CacheFile = filepath.Join(os.TempDir(), "netrat.json")
 
@@ -28,24 +28,33 @@ func (e CacheError) Error() string {
 	return e.croak
 }
 
-func CacheSave(info [2]IpInfo) error {
+func CacheSave(info NetInfo) error {
 	slog.Debug("Writing cache", "file", CacheFile)
 
-	file, _ := json.MarshalIndent(info, "", "    ")
+	var cache []IpInfo
+	for _, v := range info.ips {
+		cache = append(cache, v)
+	}
+	file, _ := json.MarshalIndent(cache, "", "    ")
 	err := os.WriteFile(CacheFile, file, 0600)
 	return err
 }
 
-func CacheLoad() ([2]IpInfo, error) {
-	var info [2]IpInfo
+func CacheLoad() (NetInfo, error) {
 	var err error
-	data, err := os.ReadFile(CacheFile)
-	if err != nil {
-		return [2]IpInfo{}, err
+	var data []byte
+	var cache []IpInfo
+	if data, err = os.ReadFile(CacheFile); err != nil {
+		return NewNetInfo(), err
 	}
-	err = json.Unmarshal(data, &info)
-	if err != nil {
-		return [2]IpInfo{}, err
+	if err = json.Unmarshal(data, &cache); err != nil {
+		return NewNetInfo(), err
 	}
+	info := NewNetInfo()
+	slog.Debug("Using cache", "file", CacheFile)
+	for _, v := range cache {
+		info.add(v)
+	}
+
 	return info, nil
 }

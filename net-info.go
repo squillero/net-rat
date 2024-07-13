@@ -11,15 +11,20 @@ package main
 import (
 	"context"
 	"log/slog"
+	"strings"
 	"time"
 )
+
+// ======================================================================
+// Network info structures
 
 type IpFlags int
 
 const (
-	LocalIP  = 0x0
-	PublicIP = 0x1
-	IpType   = 0x01
+	LocalIP    = 0x1
+	LoopbackIP = 0x2
+	PublicIP   = 0x3
+	IpType     = 0x0f
 
 	CoolIP = 0x10
 
@@ -28,33 +33,87 @@ const (
 
 type IpInfo struct {
 	RawIp     string
-	CookedIp  string
+	Comment   string
 	Source    string
 	Flags     IpFlags
 	Timestamp time.Time
 }
 
 func (ip IpInfo) String() string {
-	return ip.CookedIp
+	cookedInfo := ip.RawIp
+	if ip.Comment != "" {
+		cookedInfo += " (" + ip.Comment + ")"
+	}
+	return cookedInfo
 }
 
 func (ip IpInfo) Cool() bool {
 	return ip.Flags&CoolIP == CoolIP
 }
 func (ip IpInfo) Valid() bool {
-	return ip.RawIp != ""
+	return ip.RawIp != "" && time.Now().Sub(ip.Timestamp) < INFO_TIMEOUT
 }
 
-func getNetInfo() [2]IpInfo {
-	var result = [2]IpInfo{IpInfo{}, IpInfo{}}
+type NetInfo struct {
+	ips map[string]IpInfo
+}
+
+func NewNetInfo() NetInfo {
+	return NetInfo{ips: make(map[string]IpInfo)}
+}
+
+func (ni NetInfo) GetType(t IpFlags) string {
+	var r []string
+	for _, v := range ni.ips {
+		if v.Flags&IpType == t {
+			r = append(r, v.String())
+		}
+	}
+	return strings.Join(r[:], "/")
+
+}
+
+func (ni NetInfo) add(ip IpInfo) bool {
+	if !ip.Valid() {
+		return false
+	}
+	val, ok := ni.ips[ip.RawIp]
+	if !ok || (!val.Cool() && ip.Cool()) || ip.Timestamp.After(val.Timestamp) {
+		slog.Debug("Adding IP", "ip", ip)
+		ni.ips[ip.RawIp] = ip
+		return true
+	} else {
+		return false
+	}
+}
+
+func (ni NetInfo) AnyCool(t IpFlags) bool {
+	for _, v := range ni.ips {
+		if v.Flags&IpType == t && v.Flags&CoolIP == CoolIP {
+			return true
+		}
+	}
+	return false
+}
+
+func (ni NetInfo) Any(t IpFlags) bool {
+	for _, v := range ni.ips {
+		if v.Flags&IpType == t {
+			return true
+		}
+	}
+	return false
+}
+
+// ======================================================================
+// Get network info
+
+func getNetInfo() NetInfo {
+	result := NewNetInfo()
 
 	// ... but first, cache
 	if cache, err := CacheLoad(); err == nil {
-		for i := 0; i < 2; i++ {
-			if time.Now().Sub(cache[i].Timestamp) < CACHE_TIMEOUT {
-				result[cache[i].Flags&IpType] = cache[i]
-			}
-		}
+		result = cache
 		slog.Debug("Using cached data", "result", result)
 	}
 
@@ -85,19 +144,14 @@ func getNetInfo() [2]IpInfo {
 
 	var ip IpInfo
 	timedOut := false
-	for !timedOut && !(result[0].Cool() && result[1].Cool()) {
+	for !timedOut && (!result.Any(LocalIP) || !result.AnyCool(PublicIP)) {
 		select {
 		case <-ctxTimeout.Done():
 			slog.Debug("getNetInfo timeout!\n")
 			timedOut = true
 		case ip = <-ipChan:
-			if result[ip.Flags&IpType].Valid() && result[ip.Flags&IpType].RawIp != ip.RawIp {
-				slog.Debug("IP Mismatch!", "old", result[ip.Flags&IpType].RawIp, "new", ip.RawIp)
-			}
-			if !result[ip.Flags&IpType].Valid() || ip.Cool() {
-				result[ip.Flags&IpType] = ip
-			}
-			slog.Debug("Got IP info", "ip", ip)
+			result.add(ip)
+			slog.Debug("Got IP info", "ip", ip, "source", ip.Source)
 		}
 	}
 	CacheSave(result)

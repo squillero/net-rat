@@ -39,14 +39,22 @@ func main() {
 		os.Remove(CacheFile)
 	}
 
-	ip := getNetInfo()
-	if ip[0].Valid() && ip[1].Valid() && ip[0].RawIp != ip[1].RawIp {
-		fmt.Printf("%s/%s\n", ip[0], ip[1])
-	} else if ip[1].Valid() {
-		fmt.Printf("%s\n", ip[1])
-	} else if ip[0].Valid() {
-		fmt.Printf("%s (local only)\n", ip[0])
+	ni := getNetInfo()
+	loopback := ni.GetType(LoopbackIP)
+	local := ni.GetType(LocalIP)
+	public := ni.GetType(PublicIP)
+
+	if hostname, err := os.Hostname(); err == nil {
+		fmt.Printf("%s @ ", hostname)
+	}
+
+	if local == "" && public == "" {
+		fmt.Println(loopback + " (loopback only)")
+	} else if public == "" {
+		fmt.Println(local + " (local only)")
+	} else if local == public {
+		fmt.Println(public)
 	} else {
-		fmt.Println("Not connected")
+		fmt.Println(local + " // " + public)
 	}
 }
