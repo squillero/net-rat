@@ -105,7 +105,8 @@ func (ni NetInfo) add(ip IpInfo) bool {
 
 func (ni NetInfo) AnyCool(t IpFlags) bool {
 	for _, v := range ni.ips {
-		if v.Flags&IpType == t && v.Flags&CoolIP == CoolIP {
+		if v.Flags&IpType == t && v.Flags&CoolIP > 0 {
+			slog.Debug("! Cool IP", "type", t, "ip", v.Describe())
 			return true
 		}
 	}
@@ -115,6 +116,7 @@ func (ni NetInfo) AnyCool(t IpFlags) bool {
 func (ni NetInfo) Any(t IpFlags) bool {
 	for _, v := range ni.ips {
 		if v.Flags&IpType == t {
+			slog.Debug("! Any IP", "type", t, "ip", v.Describe())
 			return true
 		}
 	}
