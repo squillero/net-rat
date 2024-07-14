@@ -22,9 +22,9 @@ import (
 type IpFlags int
 
 const (
-	LoopbackIP = 0x1
-	LocalIP    = 0x2
-	PublicIP   = 0x4
+	LoopbackIP = 0x01
+	LocalIP    = 0x02
+	PublicIP   = 0x04
 )
 
 type IpInfo struct {
@@ -170,8 +170,6 @@ func getNetInfo() NetInfo {
 			}
 			result.add(ip)
 		}
-		slog.Debug("Result", "any", result.Any(LocalIP))
-		slog.Debug("Result", "any cool", result.AnyCool(PublicIP))
 	}
 	CacheSave(result)
 	return result
