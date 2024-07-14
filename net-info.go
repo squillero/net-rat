@@ -172,7 +172,9 @@ func getNetInfo() NetInfo {
 			slog.Debug("Got IP info", "ip", ip.Describe(), "source", ip.Source)
 			if info := checkKnownSubnets(ip); info != "" {
 				slog.Debug("Known subnet", "info", info)
+				slog.Debug("Known subnet", "ip", ip)
 				ip.Comment = info
+				slog.Debug("Known subnet", "ip", ip)
 			}
 			result.add(ip)
 		}
