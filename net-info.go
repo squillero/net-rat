@@ -84,24 +84,21 @@ func checkKnownSubnets(ip IpInfo) string {
 	return ""
 }
 
-func (ni NetInfo) add(ip IpInfo) bool {
+func (ni NetInfo) add(ip IpInfo) {
 	if !ip.IsValid() {
 		slog.Debug("Invalid IP", "ip", ip)
 		return false
 	}
-	val, ok := ni.ips[ip.RawIp]
-	if !ok {
+	if val, ok := ni.ips[ip.RawIp]; ok {
 		if val.Flags != ip.Flags {
 			ip.Flags |= val.Flags
 		}
 		if len(val.Comment) > len(ip.Comment) {
 			ip.Comment = val.Comment
 		}
-		ni.ips[ip.RawIp] = ip
-		slog.Debug("Updated IP", "ip", ip)
-		return true
 	}
-	return false
+	ni.ips[ip.RawIp] = ip
+	slog.Debug("Updated IP", "ip", ip)
 }
 
 func (ni NetInfo) AnyCool(t IpFlags) bool {
