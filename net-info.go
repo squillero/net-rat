@@ -156,7 +156,7 @@ func getNetInfo() NetInfo {
 			slog.Debug("getNetInfo timeout!\n")
 			timedOut = true
 		case ip = <-ipChan:
-			slog.Debug("Got IP info", "ip", ip, "source", ip.Source)
+			slog.Debug("Got IP info", "ip", ip.Describe(), "source", ip.Source)
 			result.add(ip)
 		}
 	}
