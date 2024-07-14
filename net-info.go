@@ -25,9 +25,6 @@ const (
 	LocalIP    = 0x1
 	LoopbackIP = 0x2
 	PublicIP   = 0x3
-	IpType     = 0xf
-
-	IPv6 IpFlags = 0x100
 )
 
 type IpInfo struct {
@@ -70,7 +67,7 @@ func NewNetInfo() NetInfo {
 func (ni NetInfo) GetType(t IpFlags) string {
 	var r []string
 	for _, v := range ni.ips {
-		if v.Flags&IpType == t {
+		if v.Flags == t {
 			r = append(r, v.Describe())
 		}
 	}
@@ -103,7 +100,7 @@ func (ni NetInfo) add(ip IpInfo) bool {
 
 func (ni NetInfo) AnyCool(t IpFlags) bool {
 	for _, v := range ni.ips {
-		if v.Flags&IpType == t && v.IsCool() {
+		if v.Flags == t && v.IsCool() {
 			slog.Debug("! Cool IP", "type", t, "ip", v.Describe())
 			return true
 		} else {
@@ -115,7 +112,7 @@ func (ni NetInfo) AnyCool(t IpFlags) bool {
 
 func (ni NetInfo) Any(t IpFlags) bool {
 	for _, v := range ni.ips {
-		if v.Flags&IpType == t {
+		if v.Flags == t {
 			slog.Debug("! Any IP", "type", t, "ip", v.Describe())
 			return true
 		}
