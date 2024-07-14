@@ -179,6 +179,8 @@ func getNetInfo() NetInfo {
 			result.add(ip)
 		}
 		slog.Debug("Current result", "result", result)
+		slog.Debug("Any", "f", result.Any(LocalIP))
+		slog.Debug("AnyCool", "f", result.AnyCool(PublicIP))
 	}
 	CacheSave(result)
 	return result
