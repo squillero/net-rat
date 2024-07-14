@@ -98,6 +98,7 @@ func (ni NetInfo) add(ip IpInfo) bool {
 			ip.Comment = val.Comment
 		}
 		ni.ips[ip.RawIp] = ip
+		slog.Debug("Updated IP", "ip", ip)
 		return true
 	}
 	return false
