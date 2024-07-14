@@ -35,7 +35,7 @@ func fetchJson(out chan IpInfo, url, tag string) {
 		RawIp:     cooked[tag].(string),
 		Source:    url,
 		Flags:     PublicIP,
-		Timestamp: time.Time{},
+		Timestamp: time.Now(),
 	}
 	out <- info
 }
