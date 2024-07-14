@@ -11,6 +11,7 @@ package main
 import (
 	"context"
 	"log/slog"
+	"net"
 	"strings"
 	"time"
 )
@@ -79,11 +80,20 @@ func (ni NetInfo) GetType(t IpFlags) string {
 
 }
 
+func checkKnownSubnets(ip *IpInfo) {
+	ipt, _, _ := net.ParseCIDR(ip.RawIp)
+	_, polito, _ := net.ParseCIDR("130.192.0.0/16")
+	if polito.Contains(ipt) {
+		ip.Comment = "Politecnico di Torino"
+	}
+}
+
 func (ni NetInfo) add(ip IpInfo) bool {
 	if !ip.IsValid() {
 		slog.Debug("Invalid IP", "ip", ip)
 		return false
 	}
+	checkKnownSubnets(&ip)
 	val, ok := ni.ips[ip.RawIp]
 	if !ok || (!val.IsCool() && ip.IsCool()) || (val.IsCool() == ip.IsCool() && ip.Timestamp.After(val.Timestamp)) {
 		ni.ips[ip.RawIp] = ip
