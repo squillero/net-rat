@@ -168,6 +168,7 @@ func getNetInfo() NetInfo {
 		case ip = <-ipChan:
 			slog.Debug("Got IP info", "ip", ip.Describe(), "source", ip.Source)
 			if info := checkKnownSubnets(ip); info != "" {
+				slog.Debug("Known subnet", "info", info)
 				ip.Comment = info
 				ip.Flags |= CoolIP
 			}
