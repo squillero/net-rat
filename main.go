@@ -36,6 +36,7 @@ func main() {
 	}
 
 	ni := getNetInfo()
+	slog.Debug("NetInfo", "info", ni)
 	loopback := ni.GetType(LoopbackIP)
 	local := ni.GetType(LocalIP)
 	public := ni.GetType(PublicIP)
