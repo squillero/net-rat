@@ -49,7 +49,7 @@ func main() {
 		fmt.Println(loopback + " (loopback only)")
 	} else if public == "" {
 		fmt.Println(local + " (local only)")
-	} else if local == "" {
+	} else if local == public {
 		fmt.Println(public)
 	} else {
 		fmt.Println(local + " // " + public)
