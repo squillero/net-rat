@@ -75,11 +75,11 @@ func (ni NetInfo) GetType(t IpFlags) string {
 
 func (ni NetInfo) add(ip IpInfo) bool {
 	if !ip.IsValid() {
+		slog.Debug("Invalid IP", "ip", ip)
 		return false
 	}
 	val, ok := ni.ips[ip.RawIp]
 	if !ok || (!val.IsCool() && ip.IsCool()) || ip.Timestamp.After(val.Timestamp) {
-		slog.Debug("Adding IP", "ip", ip)
 		ni.ips[ip.RawIp] = ip
 		return true
 	} else {
@@ -150,8 +150,8 @@ func getNetInfo() NetInfo {
 			slog.Debug("getNetInfo timeout!\n")
 			timedOut = true
 		case ip = <-ipChan:
-			result.add(ip)
 			slog.Debug("Got IP info", "ip", ip, "source", ip.Source)
+			result.add(ip)
 		}
 	}
 	CacheSave(result)

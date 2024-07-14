@@ -24,7 +24,7 @@ func fetchJson(out chan IpInfo, url, tag string) {
 		return
 	}
 	raw, err := io.ReadAll(result.Body)
-	if err != nil {
+	if err != nil || raw == nil {
 		return
 	}
 	var cooked map[string]interface{}
@@ -53,7 +53,7 @@ func fetchRaw(out chan IpInfo, url string) {
 		RawIp:     strings.TrimSpace(string(cooked)),
 		Source:    url,
 		Flags:     PublicIP,
-		Timestamp: time.Time{},
+		Timestamp: time.Now(),
 	}
 	out <- info
 }

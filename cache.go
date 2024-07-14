@@ -44,7 +44,7 @@ func CacheLoad() (NetInfo, error) {
 	var err error
 	var data []byte
 	var cache []IpInfo
-	if data, err = os.ReadFile(CacheFile); err != nil {
+	if data, err = os.ReadFile(CacheFile); err != nil || data == nil {
 		return NewNetInfo(), err
 	}
 	if err = json.Unmarshal(data, &cache); err != nil {

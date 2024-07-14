@@ -21,28 +21,33 @@ func getAirVPN(out chan IpInfo) {
 	const url string = "https://airvpn.org/api/whatismyip/"
 
 	result, err := http.Get(url)
-	if err != nil {
+	if err != nil || result == nil {
 		return
 	}
 	raw, err := io.ReadAll(result.Body)
-	if err != nil {
+	if err != nil || raw == nil {
 		return
 	}
 
 	var cooked map[string]interface{}
 	if err := json.Unmarshal([]byte(raw), &cooked); err != nil {
-		// print out if error is not nil
 		slog.Error("getAirVPN", "error", err)
 	}
 
 	// check if "geo_additional" is present in cooked
 
 	var geo string
-	if geo_additional, ok := cooked["geo_additional"]; ok {
-		geo = (geo_additional.(map[string]interface{}))["region_name"].(string) + ", " + (cooked["geo_additional"].(map[string]interface{}))["country_name"].(string)
-	} else {
+	if geo_additional, ok := cooked["geo_additional"]; ok && geo_additional != nil {
+		tmp := (geo_additional.(map[string]interface{}))
+		if tmp["region_name"] != nil && tmp["country_name"] != nil {
+			geo = tmp["region_name"].(string) + ", " + tmp["country_name"].(string)
+		}
+	}
+
+	if geo == "" {
 		geo = (cooked["geo"].(map[string]interface{}))["name"].(string)
 	}
+
 	info := IpInfo{
 		RawIp:     cooked["ip"].(string),
 		Comment:   geo,
@@ -59,7 +64,7 @@ func getIpGeoInfo(out chan IpInfo, url, ip, geoInfo, geoInfo2 string) {
 		return
 	}
 	raw, err := io.ReadAll(result.Body)
-	if err != nil {
+	if err != nil || raw == nil {
 		return
 	}
 
@@ -69,9 +74,14 @@ func getIpGeoInfo(out chan IpInfo, url, ip, geoInfo, geoInfo2 string) {
 		slog.Error("getIpGeoInfo", "error", err)
 	}
 
-	geo := cooked[geoInfo].(string)
-	if geoInfo2 != "" {
-		geo += ", " + cooked[geoInfo2].(string)
+	var geo string
+	if cooked[geoInfo] != nil {
+		geo = cooked[geoInfo].(string)
+		if geoInfo2 != "" {
+			geo += ", " + cooked[geoInfo2].(string)
+		}
+	} else {
+		geo = ""
 	}
 
 	info := IpInfo{
