@@ -67,7 +67,7 @@ func NewNetInfo() NetInfo {
 func (ni NetInfo) GetType(t IpFlags) string {
 	var r []string
 	for _, v := range ni.ips {
-		if v.Flags == t {
+		if v.Flags&t == t {
 			r = append(r, v.Describe())
 		}
 	}
