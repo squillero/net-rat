@@ -80,12 +80,13 @@ func (ni NetInfo) GetType(t IpFlags) string {
 
 }
 
-func checkKnownSubnets(ip *IpInfo) {
+func checkKnownSubnets(ip IpInfo) string {
 	ipt, _, _ := net.ParseCIDR(ip.RawIp + "/32")
 	_, polito, _ := net.ParseCIDR("130.192.0.0/16")
 	if polito.Contains(ipt) {
-		ip.Comment = "Politecnico di Torino"
+		return "Politecnico di Torino"
 	}
+	return ""
 }
 
 func (ni NetInfo) add(ip IpInfo) bool {
@@ -93,7 +94,6 @@ func (ni NetInfo) add(ip IpInfo) bool {
 		slog.Debug("Invalid IP", "ip", ip)
 		return false
 	}
-	checkKnownSubnets(&ip)
 	val, ok := ni.ips[ip.RawIp]
 	if !ok || (!val.IsCool() && ip.IsCool()) || (val.IsCool() == ip.IsCool() && ip.Timestamp.After(val.Timestamp)) {
 		ni.ips[ip.RawIp] = ip
@@ -167,6 +167,10 @@ func getNetInfo() NetInfo {
 			timedOut = true
 		case ip = <-ipChan:
 			slog.Debug("Got IP info", "ip", ip.Describe(), "source", ip.Source)
+			if info := checkKnownSubnets(ip); info != "" {
+				ip.Comment = info
+				ip.Flags |= CoolIP
+			}
 			result.add(ip)
 		}
 	}
