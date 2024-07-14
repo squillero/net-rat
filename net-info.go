@@ -22,9 +22,9 @@ import (
 type IpFlags int
 
 const (
-	LocalIP    = 0x1
-	LoopbackIP = 0x2
-	PublicIP   = 0x3
+	LoopbackIP = 0x1
+	LocalIP    = 0x2
+	PublicIP   = 0x4
 )
 
 type IpInfo struct {
@@ -90,12 +90,17 @@ func (ni NetInfo) add(ip IpInfo) bool {
 		return false
 	}
 	val, ok := ni.ips[ip.RawIp]
-	if !ok || (!val.IsCool() && ip.IsCool()) || (val.IsCool() == ip.IsCool() && ip.Timestamp.After(val.Timestamp)) {
+	if !ok {
+		if val.Flags != ip.Flags {
+			ip.Flags |= val.Flags
+		}
+		if len(val.Comment) > len(ip.Comment) {
+			ip.Comment = val.Comment
+		}
 		ni.ips[ip.RawIp] = ip
 		return true
-	} else {
-		return false
 	}
+	return false
 }
 
 func (ni NetInfo) AnyCool(t IpFlags) bool {
