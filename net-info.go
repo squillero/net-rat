@@ -105,7 +105,7 @@ func (ni NetInfo) add(ip IpInfo) bool {
 
 func (ni NetInfo) AnyCool(t IpFlags) bool {
 	for _, v := range ni.ips {
-		if v.Flags == t && v.IsCool() {
+		if v.Flags&t == t && v.IsCool() {
 			return true
 		}
 	}
@@ -114,7 +114,7 @@ func (ni NetInfo) AnyCool(t IpFlags) bool {
 
 func (ni NetInfo) Any(t IpFlags) bool {
 	for _, v := range ni.ips {
-		if v.Flags == t {
+		if v.Flags&t == t {
 			return true
 		}
 	}
