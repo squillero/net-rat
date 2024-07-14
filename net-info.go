@@ -140,7 +140,7 @@ func getNetInfo() NetInfo {
 	ctxTimeout, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	ipChan := make(chan IpInfo, 1)
+	ipChan := make(chan IpInfo, 5)
 
 	// Local IP info providers
 	go getLocalIpIFACE(ipChan)
