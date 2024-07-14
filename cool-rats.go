@@ -52,7 +52,7 @@ func getAirVPN(out chan IpInfo) {
 		RawIp:     cooked["ip"].(string),
 		Comment:   geo,
 		Source:    url,
-		Flags:     PublicIP | CoolIP,
+		Flags:     PublicIP,
 		Timestamp: time.Now(),
 	}
 	out <- info
@@ -88,7 +88,7 @@ func getIpGeoInfo(out chan IpInfo, url, ip, geoInfo, geoInfo2 string) {
 		RawIp:     cooked[ip].(string),
 		Comment:   geo,
 		Source:    url,
-		Flags:     PublicIP | CoolIP,
+		Flags:     PublicIP,
 		Timestamp: time.Now(),
 	}
 	out <- info

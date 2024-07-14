@@ -25,9 +25,7 @@ const (
 	LocalIP    = 0x1
 	LoopbackIP = 0x2
 	PublicIP   = 0x3
-	IpType     = 0x0f
-
-	CoolIP = 0x10
+	IpType     = 0xf
 
 	IPv6 IpFlags = 0x100
 )
@@ -49,7 +47,7 @@ func (ip IpInfo) Describe() string {
 }
 
 func (ip IpInfo) IsCool() bool {
-	return ip.Flags&CoolIP == CoolIP
+	return ip.Comment != ""
 }
 func (ip IpInfo) IsValid() bool {
 	if ip.RawIp == "" {
@@ -174,7 +172,6 @@ func getNetInfo() NetInfo {
 			if info := checkKnownSubnets(ip); info != "" {
 				slog.Debug("Known subnet", "info", info)
 				ip.Comment = info
-				ip.Flags |= CoolIP
 			}
 			result.add(ip)
 		}
