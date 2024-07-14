@@ -168,16 +168,10 @@ func getNetInfo() NetInfo {
 		case ip = <-ipChan:
 			slog.Debug("Got IP info", "ip", ip.Describe(), "source", ip.Source)
 			if info := checkKnownSubnets(ip); info != "" {
-				slog.Debug("Known subnet", "info", info)
-				slog.Debug("Known subnet", "ip", ip)
 				ip.Comment = info
-				slog.Debug("Known subnet", "ip", ip, "IsCool", ip.IsCool(), "IsValid", ip.IsValid())
 			}
 			result.add(ip)
 		}
-		slog.Debug("Current result", "result", result)
-		slog.Debug("Any", "f", result.Any(LocalIP))
-		slog.Debug("AnyCool", "f", result.AnyCool(PublicIP))
 	}
 	CacheSave(result)
 	return result
