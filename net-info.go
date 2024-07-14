@@ -39,13 +39,13 @@ type IpInfo struct {
 	Timestamp time.Time
 }
 
-//func (ip IpInfo) String() string {
-//	cookedInfo := ip.RawIp
-//	if ip.Comment != "" {
-//		cookedInfo += " (" + ip.Comment + ")"
-//	}
-//	return cookedInfo
-//}
+func (ip IpInfo) Describe() string {
+	cookedInfo := ip.RawIp
+	if ip.Comment != "" {
+		cookedInfo += " (" + ip.Comment + ")"
+	}
+	return cookedInfo
+}
 
 func (ip IpInfo) IsCool() bool {
 	return ip.Flags&CoolIP == CoolIP
@@ -72,7 +72,7 @@ func (ni NetInfo) GetType(t IpFlags) string {
 	var r []string
 	for _, v := range ni.ips {
 		if v.Flags&IpType == t {
-			r = append(r, v.String())
+			r = append(r, v.Describe())
 		}
 	}
 	return strings.Join(r[:], "/")
