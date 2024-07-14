@@ -108,6 +108,8 @@ func (ni NetInfo) AnyCool(t IpFlags) bool {
 		if v.Flags&IpType == t && v.IsCool() {
 			slog.Debug("! Cool IP", "type", t, "ip", v.Describe())
 			return true
+		} else {
+			slog.Debug("! Not cool IP", "type", t, "v", v)
 		}
 	}
 	return false
