@@ -38,7 +38,7 @@ type IpInfo struct {
 func (ip IpInfo) Describe() string {
 	cookedInfo := ip.RawIp
 	if ip.Comment != "" {
-		cookedInfo += " (" + ip.Comment + ")"
+		cookedInfo += " [" + ip.Comment + "]"
 	}
 	return cookedInfo
 }
@@ -76,10 +76,15 @@ func (ni NetInfo) GetType(t IpFlags) string {
 }
 
 func checkKnownSubnets(ip IpInfo) string {
+	knownNetworks := map[string]string{
+		"130.192.0.0/16": "Politecnico di Torino",
+	}
 	ipt, _, _ := net.ParseCIDR(ip.RawIp + "/32")
-	_, polito, _ := net.ParseCIDR("130.192.0.0/16")
-	if polito.Contains(ipt) {
-		return "Politecnico di Torino"
+	for k, v := range knownNetworks {
+		_, subnet, _ := net.ParseCIDR(k)
+		if subnet.Contains(ipt) {
+			return v
+		}
 	}
 	return ""
 }
