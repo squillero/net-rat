@@ -39,13 +39,13 @@ type IpInfo struct {
 	Timestamp time.Time
 }
 
-func (ip IpInfo) String() string {
-	cookedInfo := ip.RawIp
-	if ip.Comment != "" {
-		cookedInfo += " (" + ip.Comment + ")"
-	}
-	return cookedInfo
-}
+//func (ip IpInfo) String() string {
+//	cookedInfo := ip.RawIp
+//	if ip.Comment != "" {
+//		cookedInfo += " (" + ip.Comment + ")"
+//	}
+//	return cookedInfo
+//}
 
 func (ip IpInfo) IsCool() bool {
 	return ip.Flags&CoolIP == CoolIP
