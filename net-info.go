@@ -87,7 +87,7 @@ func checkKnownSubnets(ip IpInfo) string {
 func (ni NetInfo) add(ip IpInfo) {
 	if !ip.IsValid() {
 		slog.Debug("Invalid IP", "ip", ip)
-		return false
+		return
 	}
 	if val, ok := ni.ips[ip.RawIp]; ok {
 		if val.Flags != ip.Flags {
