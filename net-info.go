@@ -98,7 +98,6 @@ func (ni NetInfo) add(ip IpInfo) {
 		}
 	}
 	ni.ips[ip.RawIp] = ip
-	slog.Debug("Updated IP", "ip", ip)
 }
 
 func (ni NetInfo) AnyCool(t IpFlags) bool {
