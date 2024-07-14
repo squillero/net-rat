@@ -84,7 +84,6 @@ func checkKnownSubnets(ip *IpInfo) {
 	ipt, _, _ := net.ParseCIDR(ip.RawIp + "/32")
 	_, polito, _ := net.ParseCIDR("130.192.0.0/16")
 	if polito.Contains(ipt) {
-		slog.Debug("Politecnico di Torino", "ip", ip)
 		ip.Comment = "Politecnico di Torino"
 	}
 }
