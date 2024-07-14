@@ -178,6 +178,7 @@ func getNetInfo() NetInfo {
 			}
 			result.add(ip)
 		}
+		slog.Debug("Current result", "result", result)
 	}
 	CacheSave(result)
 	return result
