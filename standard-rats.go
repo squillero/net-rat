@@ -87,6 +87,8 @@ func getLocalIpIFACE(out chan IpInfo) {
 					t = LoopbackIP
 				} else if ipnet.IP.IsPrivate() {
 					t = LocalIP
+				} else if ipnet.IP.IsGlobalUnicast() {
+					t = PublicIP
 				} else {
 					slog.Debug("***IP", "ip", ipnet.IP)
 				}

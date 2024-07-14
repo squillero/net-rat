@@ -18,10 +18,6 @@ import (
 
 const NetRatVersion = "0.1"
 
-// FLAGS
-var Verbose bool = false
-var NoCache bool = false
-
 func main() {
 	log.SetPrefix("🐀 ") // 🐁
 	log.SetFlags(log.Ldate | log.Ltime | log.Lmicroseconds | log.Lmsgprefix | log.LUTC)
