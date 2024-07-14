@@ -174,7 +174,7 @@ func getNetInfo() NetInfo {
 				slog.Debug("Known subnet", "info", info)
 				slog.Debug("Known subnet", "ip", ip)
 				ip.Comment = info
-				slog.Debug("Known subnet", "ip", ip)
+				slog.Debug("Known subnet", "ip", ip, "IsCool", ip.IsCool(), "IsValid", ip.IsValid())
 			}
 			result.add(ip)
 		}
