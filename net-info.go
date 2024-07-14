@@ -55,7 +55,7 @@ func (ip IpInfo) IsValid() bool {
 		slog.Debug("Invalid IP (no RawIp)", "ip", ip)
 	}
 	if time.Now().Sub(ip.Timestamp) >= INFO_TIMEOUT {
-		slog.Debug("Invalid IP (old IP)", "ip.Timestamp", ip.Timestamp)
+		slog.Debug("Invalid IP (old IP)", "ip", ip)
 	}
 	return ip.RawIp != "" && time.Now().Sub(ip.Timestamp) < INFO_TIMEOUT
 }
