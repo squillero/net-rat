@@ -85,7 +85,7 @@ func (ni NetInfo) add(ip IpInfo) bool {
 		return false
 	}
 	val, ok := ni.ips[ip.RawIp]
-	if !ok || (!val.IsCool() && ip.IsCool()) || (!val.IsCool() == ip.IsCool() && ip.Timestamp.After(val.Timestamp)) {
+	if !ok || (!val.IsCool() && ip.IsCool()) || (val.IsCool() == ip.IsCool() && ip.Timestamp.After(val.Timestamp)) {
 		ni.ips[ip.RawIp] = ip
 		return true
 	} else {
