@@ -86,9 +86,11 @@ func (ni NetInfo) add(ip IpInfo) bool {
 	}
 	val, ok := ni.ips[ip.RawIp]
 	if !ok || (!val.IsCool() && ip.IsCool()) || ip.Timestamp.After(val.Timestamp) {
+		slog.Debug("Substituting IP", "ip", ip)
 		ni.ips[ip.RawIp] = ip
 		return true
 	} else {
+		slog.Debug("NOT substituting IP", "ip", ip)
 		return false
 	}
 }
