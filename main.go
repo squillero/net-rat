@@ -62,7 +62,7 @@ func main() {
 	} else if len(local) > 0 && len(public) == 0 {
 		fmt.Printf("%s [Local Only]", local[0].Describe())
 	} else if len(local) == 1 && len(public) == 1 && local[0].RawIp == public[0].RawIp {
-		fmt.Print(public)
+		fmt.Print(public[0].Describe())
 	} else if len(local) == 1 {
 		fmt.Printf("%s ", local[0].Describe())
 
