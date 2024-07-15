@@ -58,10 +58,10 @@ func NewNetInfo() NetInfo {
 	return NetInfo{ips: make(map[string]IpInfo)}
 }
 
-func (ni NetInfo) GetType(t IpFlags) []IpInfo {
+func (ni NetInfo) GetType(yes, no IpFlags) []IpInfo {
 	var r []IpInfo
 	for _, v := range ni.ips {
-		if v.Flags&t == t {
+		if v.Flags&yes == yes && v.Flags&no == 0 {
 			r = append(r, v)
 		}
 	}
@@ -88,9 +88,7 @@ func (ni NetInfo) add(ip IpInfo) {
 		return
 	}
 	if val, ok := ni.ips[ip.RawIp]; ok {
-		if val.Flags == PublicIP || ip.Flags == PublicIP {
-			ip.Flags = PublicIP
-		}
+		ip.Flags |= val.Flags
 		if len(val.Comment) > len(ip.Comment) {
 			ip.Comment = val.Comment
 		}
