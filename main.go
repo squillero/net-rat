@@ -56,6 +56,7 @@ func main() {
 	slog.Debug("LocalIP", "val", local)
 	slog.Debug("PublicIP", "val", public)
 
+	loopback_s := Squeeze(loopback)
 	local_s := Squeeze(local)
 	if len(tunnel) > 0 {
 		local_s += " via " + Squeeze(tunnel)
@@ -63,7 +64,7 @@ func main() {
 	var public_s string
 	if len(public) == 1 {
 		public_s = public[0].Describe()
-	} else {
+	} else if len(public) > 1 {
 		var d []string
 		for _, v := range public {
 			if v.Comment != "" {
@@ -83,9 +84,15 @@ func main() {
 	if hostname, err := os.Hostname(); err == nil {
 		fmt.Printf("%s @ ", hostname)
 	}
-	if local_s != "" && public_s != "" {
+
+	switch {
+	case local_s == "" && public_s == "" && loopback_s == "":
+		fmt.Print("no network")
+	case local_s == "" && public_s == "" && loopback_s != "":
+		fmt.Printf("%s [Loopback Only]", loopback_s)
+	case local_s != "" && public_s != "":
 		fmt.Printf("%s // %s", local_s, public_s)
-	} else {
+	case local_s == "" || public_s == "":
 		fmt.Printf("%s%s", local_s, public_s)
 	}
 	fmt.Println()
