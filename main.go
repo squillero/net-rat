@@ -90,10 +90,12 @@ func main() {
 		fmt.Print("no network")
 	case local_s == "" && public_s == "" && loopback_s != "":
 		fmt.Printf("%s [Loopback Only]", loopback_s)
+	case local_s != "" && public_s == "":
+		fmt.Printf("%s [Local Only]", loopback_s)
 	case local_s != "" && public_s != "":
 		fmt.Printf("%s // %s", local_s, public_s)
-	case local_s == "" || public_s == "":
-		fmt.Printf("%s%s", local_s, public_s)
+	case local_s == "" && public_s != "":
+		fmt.Printf("%s", public_s)
 	}
 	fmt.Println()
 }
