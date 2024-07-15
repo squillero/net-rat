@@ -88,8 +88,8 @@ func (ni NetInfo) add(ip IpInfo) {
 		return
 	}
 	if val, ok := ni.ips[ip.RawIp]; ok {
-		if val.Flags != ip.Flags {
-			ip.Flags |= val.Flags
+		if val.Flags == LocalIP && ip.Flags == PublicIP {
+			ip.Flags = val.Flags
 		}
 		if len(val.Comment) > len(ip.Comment) {
 			ip.Comment = val.Comment
