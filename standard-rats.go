@@ -64,7 +64,7 @@ func getLocalIpUDP(out chan IpInfo) {
 		localAddress := conn.LocalAddr().(*net.UDPAddr)
 		info := IpInfo{
 			RawIp:     localAddress.IP.String(),
-			Source:    "udp",
+			Source:    "net.Dial()",
 			Flags:     LocalIP,
 			Timestamp: time.Now(),
 		}
@@ -73,31 +73,35 @@ func getLocalIpUDP(out chan IpInfo) {
 }
 
 func getLocalIpIFACE(out chan IpInfo) {
-	addrs, err := net.InterfaceAddrs()
-	if err != nil {
-		return
-	}
-	for _, address := range addrs {
-		// check the address type and if it is not a loopback the display it
-		//if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
-		if ipnet, ok := address.(*net.IPNet); ok {
-			if ipnet.IP.To4() != nil {
-				var t IpFlags
-				if ipnet.IP.IsLoopback() {
-					t = LoopbackIP
-				} else if ipnet.IP.IsPrivate() {
-					t = LocalIP
-				} else if ipnet.IP.IsGlobalUnicast() {
-					t = PublicIP
-				} else {
-					slog.Debug("***IP", "ip", ipnet.IP)
-				}
-				if t > 0 {
-					out <- IpInfo{
-						RawIp:     ipnet.IP.String(),
-						Source:    "IFace",
-						Flags:     t,
-						Timestamp: time.Now(),
+	if ifaces, err := net.Interfaces(); err == nil {
+		for _, v := range ifaces {
+			if addrs, err := v.Addrs(); err == nil {
+				for _, addr := range addrs {
+					//slog.Debug("Address", "net", addr.Network(), "str", addr.String())
+					var ip net.IP
+					switch v := addr.(type) {
+					case *net.IPNet:
+						ip = v.IP
+					case *net.IPAddr:
+						ip = v.IP
+					}
+					if ip != nil && ip.To4() != nil {
+						var f IpFlags
+
+						if v.Flags&net.FlagLoopback != 0 {
+							f = LoopbackIP
+						} else if v.Flags&net.FlagBroadcast != 0 {
+							f = LocalIP
+						} else if v.Flags&net.FlagPointToPoint != 0 {
+							f = TunnelIP
+						}
+						out <- IpInfo{
+							RawIp:     ip.String(),
+							Comment:   "",
+							Source:    "Interfaces()",
+							Flags:     f,
+							Timestamp: time.Now(),
+						}
 					}
 				}
 			}

@@ -12,7 +12,6 @@ import (
 	"context"
 	"log/slog"
 	"net"
-	"strings"
 	"time"
 )
 
@@ -22,9 +21,10 @@ import (
 type IpFlags int
 
 const (
-	LoopbackIP = 0x01
-	LocalIP    = 0x02
-	PublicIP   = 0x04
+	LoopbackIP = 1 << iota
+	TunnelIP
+	LocalIP
+	PublicIP
 )
 
 type IpInfo struct {
@@ -47,12 +47,6 @@ func (ip IpInfo) IsCool() bool {
 	return ip.Comment != ""
 }
 func (ip IpInfo) IsValid() bool {
-	if ip.RawIp == "" {
-		slog.Debug("Invalid IP (no RawIp)", "ip", ip)
-	}
-	if time.Now().Sub(ip.Timestamp) >= INFO_TIMEOUT {
-		slog.Debug("Invalid IP (old IP)", "ip", ip)
-	}
 	return ip.RawIp != "" && time.Now().Sub(ip.Timestamp) < INFO_TIMEOUT
 }
 
@@ -64,15 +58,14 @@ func NewNetInfo() NetInfo {
 	return NetInfo{ips: make(map[string]IpInfo)}
 }
 
-func (ni NetInfo) GetType(t IpFlags) string {
-	var r []string
+func (ni NetInfo) GetType(t IpFlags) []IpInfo {
+	var r []IpInfo
 	for _, v := range ni.ips {
 		if v.Flags&t == t {
-			r = append(r, v.Describe())
+			r = append(r, v)
 		}
 	}
-	return strings.Join(r[:], "/")
-
+	return r
 }
 
 func checkKnownSubnets(ip IpInfo) string {
