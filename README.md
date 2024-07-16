@@ -1,7 +1,7 @@
 ```
-       ____()()     NetRat v0.1
+       ____()()     NetRat v0.2
       /      @@     ~~~~~~~~~~~
-`~~~~~\_;m__m._>o   A Go hack
+`~~~~~\_;m__m._>o   A Go experiment
 ```
 
 ### Copyright © 2024 by Giovanni Squillero

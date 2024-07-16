@@ -1,10 +1,10 @@
-//        ____()()     NetRat v0.1
+//        ____()()     NetRat v0.2
 //       /      @@     ~~~~~~~~~~~
-// `~~~~~\_;m__m._>o   A Go hack
+// `~~~~~\_;m__m._>o   A Go experiment
 //
 // Coded in July 2024, between Italy and Australia (34,138 km).
 // Copyright © 2024 Giovanni Squillero <giovanni.squillero@polito.it>
-// Released for educational and academic purposes under 0BSD.
+// Released under 0BSD (see LICENSE).
 
 package main
 
@@ -51,11 +51,6 @@ func main() {
 	local := ni.GetType(LocalIP, PublicIP)
 	public := ni.GetType(PublicIP, 0)
 
-	slog.Debug("LoopbackIP", "val", loopback)
-	slog.Debug("TunnelIP", "val", tunnel)
-	slog.Debug("LocalIP", "val", local)
-	slog.Debug("PublicIP", "val", public)
-
 	loopback_s := Squeeze(loopback)
 	local_s := Squeeze(local)
 	if len(tunnel) > 0 {
@@ -76,8 +71,6 @@ func main() {
 			public_s += " [" + strings.Join(d[:], "; ") + "]"
 		}
 	}
-	slog.Debug("*", "local_s", local_s)
-	slog.Debug("*", "public_s", public_s)
 
 	// 	return strings.Join(r[:], "/")
 
