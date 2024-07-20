@@ -11,7 +11,6 @@ package main
 import (
 	"encoding/json"
 	"io"
-	"log/slog"
 	"net"
 	"net/http"
 	"strings"
@@ -29,7 +28,7 @@ func fetchJson(out chan IpInfo, url, tag string) {
 	}
 	var cooked map[string]interface{}
 	if err := json.Unmarshal([]byte(raw), &cooked); err != nil {
-		slog.Debug("fetchJson: ", "err", err)
+		return
 	}
 	info := IpInfo{
 		RawIp:     cooked[tag].(string),
@@ -46,7 +45,7 @@ func fetchRaw(out chan IpInfo, url string) {
 		return
 	}
 	cooked, err := io.ReadAll(result.Body)
-	if err != nil {
+	if err != nil || len(string(cooked)) > 30 {
 		return
 	}
 	info := IpInfo{
