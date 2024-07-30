@@ -40,7 +40,7 @@ func main() {
 	}
 	slog.Debug("This is NetRat v" + NetRatVersion)
 	if *clearCache {
-		slog.Debug("Clearing cache", "file", CacheFile)
+		slog.Debug("Removing cache", "file", CacheFile)
 		os.Remove(CacheFile)
 	}
 

@@ -51,7 +51,7 @@ func CacheLoad() (NetInfo, error) {
 		return NewNetInfo(), err
 	}
 	info := NewNetInfo()
-	slog.Debug("Using cache", "file", CacheFile)
+	slog.Debug("Reading cache", "file", CacheFile)
 	for _, v := range cache {
 		info.add(v)
 	}
