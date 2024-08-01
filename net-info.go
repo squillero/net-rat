@@ -140,6 +140,7 @@ func getNetInfo() NetInfo {
 	go getAirVPN(ipChan)
 	go getIpGeoInfo(ipChan, "https://freeipapi.com/api/json", "ipAddress", "cityName", "countryCode")
 	go getIpGeoInfo(ipChan, "https://am.i.mullvad.net/json", "ip", "city", "country")
+	go getIpGeoInfo(ipChan, "http://ipinfo.io/json", "ip", "city", "country")
 
 	// Standard IP info providers
 	go fetchRaw(ipChan, "http://api4.ipify.org/")
